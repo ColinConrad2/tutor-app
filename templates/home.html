@@ -1,18 +1,52 @@
-<!--tmplates/home.html-->
+<!-- templates/home.html -->
+
 {% extends "base.html" %}
 
 {% block title %}Home{% endblock title %}
 
 {% block content %}
-{% if user.is_authenticated %}
-<p>Hi {{ user.username }} You are {{ user.age }} years old! </p>
-<form action="{% url 'logout' %}" method="post">
-    {% csrf_token %}
-    <button class="btn btn-danger ms-2" type="submit">Log Out</button>
-</form>
-{% else %}
-<p>You are not logged in</p>
-<a href="{% url 'login' %}">Log In</a> |
-<a href="{% url 'signup' %}">Sign Up</a>
-{% endif %}
+    {% if user.is_authenticated %}
+        <p>Hi {{ user.username }}! You are a {{ user.user_type|title }}!</p>  <!-- Use user.user_type instead of is_staff -->
+        
+        {% if user.user_type == 'ta' %}  <!-- Check if the user is a TA -->
+            <a href="{% url 'add_hours' %}" class="btn btn-primary">Add Available Hours</a>
+        {% endif %}
+
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button class="btn btn-danger ms-2" type="submit">Log Out</button>
+        </form>
+    {% else %}
+        <p>You are not logged in</p>
+        <a href="{% url 'login' %}">Log In</a> |
+        <a href="{% url 'signup' %}">Sign Up</a>
+    {% endif %}
+
+    <h2>Teaching Assistants</h2>
+    <ul>
+        {% for ta in ta_users %}
+            <li>
+                <strong>{{ ta.username }}</strong><br>
+                Pronouns: {{ ta.pronouns }}<br>
+                Classes TA-ing:
+                <ul>
+                    {% for class in ta.ta_classes.all %}
+                        <li>{{ class.name }}</li>
+                    {% empty %}
+                        <li>No classes assigned.</li>
+                    {% endfor %}
+                </ul>
+                <h5>Available Hours:</h5>
+                <ul>
+                    {% for hour in ta.available_hours.all %}
+                        <li>{{ hour.day_of_week }}: {{ hour.time_slot }}</li>
+                    {% empty %}
+                        <li>No available hours.</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% empty %}
+            <li>No TAs available.</li>
+        {% endfor %}
+    </ul>
 {% endblock content %}
