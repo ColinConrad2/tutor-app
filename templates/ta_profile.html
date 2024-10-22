@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}{{ ta_user.username }}'s Profile{% endblock title %}
+
+{% block content %}
+    <h2>{{ ta_user.username }}'s Profile</h2>
+    <p>Pronouns: {{ ta_user.pronouns }}</p>
+    <p>Age: {{ ta_user.age }}</p>
+
+    <h3>Classes TA-ing:</h3>
+    <ul>
+        {% for class in ta_user.ta_classes.all %}
+            <li>{{ class.name }}</li>
+        {% empty %}
+            <li>No classes assigned.</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Available Hours:</h3>
+    <ul>
+        {% for hour in ta_user.available_hours.all %}
+            <li>{{ hour.day_of_week }}: {{ hour.time_slot }}</li>
+        {% empty %}
+            <li>No available hours.</li>
+        {% endfor %}
+    </ul>
+    
+    <a href="{% url 'home' %}" class="btn btn-maroon">Back to Home</a>
+{% endblock content %}

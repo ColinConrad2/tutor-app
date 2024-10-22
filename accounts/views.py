@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from .models import CustomUser, Class, AvailableHour
 from .forms import CustomUserCreationForm, AvailableHourForm
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404, render
 
 
 @method_decorator(login_required, name='dispatch')
@@ -25,7 +25,14 @@ class AvailableHourCreateView(CreateView):
 def delete_available_hour(request, hour_id):
     hour = get_object_or_404(AvailableHour, id=hour_id, user=request.user)
     hour.delete()
-    return redirect('home')    
+    return redirect('home') 
+
+def ta_profile(request, pk):
+    ta_user = get_object_or_404(CustomUser, pk=pk, user_type='ta')
+    context = {
+        'ta_user': ta_user, 
+    }
+    return render(request, 'ta_profile.html', context)   
 
 class CustomUserCreationForm(UserCreationForm):
     user_type = forms.ChoiceField(choices=[('student', 'Student'), ('ta', 'Teaching Assistant')])
